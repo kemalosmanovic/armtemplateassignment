@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.12.40.16777",
+      "templateHash": "15357638681691104016"
+    }
+  },
+  "parameters": {
+    "storageNamestr": {
+      "type": "string",
+      "metadata": {
+        "description": "Specifies the name of the Azure Storage account."
+      }
+    },
+    "containerName": {
+      "type": "string",
+      "defaultValue": "logs",
+      "metadata": {
+        "description": "Specifies the name of the blob container."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Specifies the location in which the Azure Storage resources should be deployed."
+      }
+    },
+	"accountType": { //specifies the account type parameter
+		"type": "string" //set account data type to allow only string values
+	},
+	"accessTier": { //specifies access tier parameter
+		"type": "string" //set accesstier data type to allow only string values
+	},
+	"supportsHttpsTrafficOnly": {//specifies https supported traffic only
+		"type": "bool" //sets datatype to bool value (Y/N)
+	}
+  },
+  "variables": { //setting variable part of code
+    "storageNamevar": "[concat(toLower(parameters('storageNamestr')), uniqueString(resourceGroup().id))]"
+     //setting storageaccount name as a variable to use later on in outputs
+     //concats the storagename inputted by the user and the name of the resource group 
+     //ensures that the storgage name is unique.
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2022-05-01",
+      "name": "[variables('storageNamevar')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('accountType')]" //accepts input paramter by user for sku name by taking account type value
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "[parameters('accessTier')]", //changed the access tier to accept paramter value instead of having a pre-set value
+		"supportsHttpsTrafficOnly": "[parameters('supportsHttpsTrafficOnly')]" //accepts input paramter for supports https traffic only value
+      }
+    },
+  ],
+  "outputs": { 
+    "storageEndpoint": { // to get the endpoints for your new storage account
+      "type": "object", //setting storageendpoint as object datatype
+      "value": "[reference(variables('storageNamevar')).primaryEndpoints]" //highlights the name of the storage account to make sure to get the correct endpoint for the correct storage name
+    }
+  }
+}

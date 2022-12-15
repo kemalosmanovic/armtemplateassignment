@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "Template"
+        },
+        "location": {
+            "value": "eastus"
+        },
+        "kind": {
+            "value": "Gen2"
+        },
+        "pricingspec": {
+            "value": "g2"
+        },
+        "userIdentities": {
+            "value": {
+                "type": "None"
+            }
+        },
+        "tagsByResource": {
+            "value": {}
+        },
+        "CORS": { //setting paramter for cors
+            "value": [ //storing allowed values in array
+                "https://superdesignadmin.com:8080", //allows internal traffic to enter site
+                "https://externalaccessdomain.com:8080" //allowing external traffic to enter the site
+            ]
+        },
+        "apiVersion": {
+            "value": "2021-12-01-preview"
+        }
+    }
+}

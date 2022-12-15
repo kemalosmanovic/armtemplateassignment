@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "accountName":{
+            "type": "securestring", // changed from string to secure string for securty
+            "defaultValue": "[uniqueString(resourceGroup().id)]",
+            "metadata": {
+                "description": "The name for your Azure Maps account. This value must be globally unique."
+            }
+        }, 
+        "pricingTier": { 
+            "type": "string", 
+            "allowedValues":[  
+                "G2" //got rid of other allowed values as g2 is most appropriate for SUPERDESIGN
+            ], 
+            "defaultValue": "G2",
+            "metadata": { 
+                "description": "The pricing tier for the account." //Changed description to better fit the template as I got rid of other valeus
+            } 
+        }, 
+        "kind": { 
+            "type": "string", 
+            "allowedValues":[  
+                "Gen2" //got rid of other allowed values as gen2 is most appropriate for SUPERDESIGN
+            ], 
+            "defaultValue": "Gen2", 
+            "metadata": { 
+                "description": "The pricing tier for the account." //changed description as i got rid of the other values
+            } 
+        },
+        "userIdentities": { //added identities parameter to be used in resource part of code
+            "type": "object" //setting datatype as an object
+        },
+        "tagsByResource": { //added tags parameter to be used in resource part of code
+            "type": "object" //setting datatype as an object
+        },
+        "CORS": {
+            "type": "array", //added cors paramter to be used in resource part of code
+            "defaultValue": [] //setting data type to array and an empty array as the default value
+        }
+    }, 
+    "resources": [
+        {
+            "name": "[parameters('accountName')]",
+            "type": "Microsoft.Maps/accounts",
+            "apiVersion": "2021-02-01",
+            "location": "global",
+            "sku": {
+               "name": "[parameters('pricingTier')]"
+            }, 
+            "identity": "[ if(not(empty(parameters('userIdentities'))), parameters('userIdentities'), json('{}')) ]",
+            "tags": "[ if(contains(parameters('tagsByResource'), 'Microsoft.Maps/accounts'), parameters('tagsByResource')['Microsoft.Maps/accounts'], json('{}')) ]",
+            //identity is used to manage how many different identities can manage the azure maps account
+            //however no identities have been assigned
+            //tags are used as name/value pairs that enable you to categorize resource
+            //however no tags have been assigned
+            "properties": {
+                "cors": {
+                    "corsRules": [
+                        {
+                            "allowedOrigins": "[parameters('CORS')]"
+                        }
+                    ]
+                }
+            },
+            "kind" : "[parameters('kind')]" 
+        }
+    ]
+}
